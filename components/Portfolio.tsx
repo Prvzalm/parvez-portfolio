@@ -131,7 +131,7 @@ export default function Portfolio() {
 
       <Guestbook />
 
-      <section className="outside section-shell"><div><SectionLabel>OUTSIDE THE TERMINAL</SectionLabel><h2>The person<br />behind the <span>build.</span></h2></div><div className="outside-grid"><p>When I&apos;m not translating ideas into interfaces, I&apos;m usually finding a new opening in chess, playing a few piano keys, or learning a technology just to see what it can do.</p><div className="interest-list"><span>♟ Chess</span><span>♫ Piano</span><span>◌ Learning</span><span>⌘ Side projects</span></div><EasterEggs /></div></section>
+      <section className="outside section-shell"><div><SectionLabel>OUTSIDE THE TERMINAL</SectionLabel><h2>The person<br />behind the <span>build.</span></h2></div><div className="outside-grid"><p>When I&apos;m not translating ideas into interfaces, I&apos;m usually finding a new opening in chess, playing a few piano keys, or learning a technology just to see what it can do.</p><div className="interest-list"><span>◌ Learning</span><span>⌘ Side projects</span><EasterEggs /></div></div></section>
 
       <section className="github section-shell" id="github">
         <div className="github-mark"><Github size={44} strokeWidth={1.5} /></div>
