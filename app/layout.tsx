@@ -1,29 +1,35 @@
 import type { Metadata } from "next";
+import { DM_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { site } from "../data/site";
+
+const sans = Space_Grotesk({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const mono = DM_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap", weight: ["400", "500"] });
+const siteUrl = /^https?:\/\//.test(site.siteUrl) ? site.siteUrl : undefined;
 
 export const metadata: Metadata = {
-  title: "Parvez Alam — Full-Stack Developer",
-  description:
-    "Parvez Alam builds modern web products, full-stack systems and useful digital experiences.",
-  metadataBase: new URL("https://parvezalam.dev"),
+  title: `${site.name} — ${site.title}`,
+  description: site.description,
+  ...(siteUrl ? { metadataBase: new URL(siteUrl) } : {}),
   openGraph: {
-    title: "Parvez Alam — Full-Stack Developer",
+    title: `${site.name} — ${site.title}`,
     description: "Products, systems and experiences for the web.",
     type: "website",
-    url: "https://parvezalam.dev"
+    ...(siteUrl ? { url: siteUrl, images: [{ url: "/og-image.png", alt: "Parvez Alam — Full-Stack Developer" }] } : {})
   },
   twitter: {
     card: "summary_large_image",
-    title: "Parvez Alam — Full-Stack Developer",
+    title: `${site.name} — ${site.title}`,
     description: "Products, systems and experiences for the web."
   },
-  alternates: { canonical: "https://parvezalam.dev" }
+  ...(siteUrl ? { alternates: { canonical: siteUrl } } : {}),
+  icons: { icon: "/favicon.svg", apple: "/favicon.svg" }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${sans.variable} ${mono.variable}`}>
         {children}
         <script
           type="application/ld+json"
@@ -33,8 +39,19 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               "@type": "Person",
               name: "Parvez Alam",
               jobTitle: "Full-Stack Developer",
-              url: "https://parvezalam.dev",
-              sameAs: ["https://github.com/Prvzalm", "https://www.linkedin.com/in/parvez013"]
+              ...(siteUrl ? { url: siteUrl } : {}),
+              sameAs: [site.githubUrl, site.linkedInUrl]
+            })}}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: site.name,
+              description: site.description,
+              ...(siteUrl ? { url: siteUrl } : {})
             })
           }}
         />
