@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   try {
     const { data, error } = await adminClient()
       .from("guestbook_traces")
-      .select("id, name, image_url, cloudinary_public_id, created_at, active, moderation_status, ip_hash, user_agent, referer, language, timezone, screen, platform, anonymous")
+      .select("id, name, image_url, cloudinary_public_id, created_at, active, moderation_status, ip_hash, ip_address, browser_hints, client_metadata, user_agent, referer, language, timezone, screen, platform, anonymous")
       .order("created_at", { ascending: false })
       .limit(200);
     if (error) throw error;

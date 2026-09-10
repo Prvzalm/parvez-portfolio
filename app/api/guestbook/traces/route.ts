@@ -11,6 +11,13 @@ function hashIp(request: Request) {
   return createHash("sha256").update(`${salt}:${ip}`).digest("hex");
 }
 
+function requestIp(request: Request) {
+  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    || request.headers.get("x-real-ip")
+    || request.headers.get("cf-connecting-ip")
+    || null;
+}
+
 export async function GET() {
   try {
     const { data, error } = await getSupabaseAdmin()
@@ -38,6 +45,7 @@ export async function POST(request: Request) {
     screen?: string;
     language?: string;
     platform?: string;
+    clientMetadata?: Record<string, unknown>;
   } | null;
   const name = body?.name?.trim().slice(0, 40);
   if (!name || !body?.imageUrl || !body.imageUrl.startsWith("https://res.cloudinary.com/")) {
@@ -60,7 +68,16 @@ export async function POST(request: Request) {
         language: body.language?.slice(0, 32) ?? null,
         timezone: body.timezone?.slice(0, 64) ?? null,
         screen: body.screen?.slice(0, 32) ?? null,
-        platform: body.platform?.slice(0, 64) ?? null
+        platform: body.platform?.slice(0, 64) ?? null,
+        ip_address: requestIp(request),
+        browser_hints: {
+          userAgent: request.headers.get("user-agent"),
+          secChUa: request.headers.get("sec-ch-ua"),
+          secChUaMobile: request.headers.get("sec-ch-ua-mobile"),
+          secChUaPlatform: request.headers.get("sec-ch-ua-platform"),
+          acceptLanguage: request.headers.get("accept-language")
+        },
+        client_metadata: body.clientMetadata ?? {}
       })
       .select("id, name, image_url, cloudinary_public_id, created_at, anonymous")
       .single();
@@ -68,6 +85,6 @@ export async function POST(request: Request) {
     return NextResponse.json(data);
   } catch (error) {
     console.error("Guestbook trace creation failed.", error);
-    return NextResponse.json({ error: "Could not save trace." }, { status: 500 });
+    return NextResponse.json({ error: "Could not save trace.", hint: "Run the latest supabase/guestbook.sql migration before retrying." }, { status: 500 });
   }
 }

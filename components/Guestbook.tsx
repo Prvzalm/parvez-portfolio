@@ -124,7 +124,18 @@ export default function Guestbook() {
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       screen: `${window.screen.width}x${window.screen.height}`,
       language: navigator.language,
-      platform: navigator.platform
+      platform: navigator.platform,
+      clientMetadata: {
+        viewport: `${window.innerWidth}x${window.innerHeight}`,
+        devicePixelRatio: window.devicePixelRatio,
+        hardwareConcurrency: navigator.hardwareConcurrency,
+        maxTouchPoints: navigator.maxTouchPoints,
+        cookieEnabled: navigator.cookieEnabled,
+        online: navigator.onLine,
+        colorScheme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
+        reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+        referrer: document.referrer || null
+      }
     });
     setTraces((current) => [trace, ...current].slice(0, 60));
     setTraceCount((count) => count + 1);

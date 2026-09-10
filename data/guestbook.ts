@@ -12,4 +12,5 @@ export interface GuestTraceMetadata {
   screen?: string;
   language?: string;
   platform?: string;
+  clientMetadata?: Record<string, unknown>;
 }

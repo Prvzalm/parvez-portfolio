@@ -13,6 +13,9 @@ create table if not exists public.guestbook_traces (
   timezone text,
   screen text,
   platform text,
+  ip_address inet,
+  browser_hints jsonb not null default '{}'::jsonb,
+  client_metadata jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now()
 );
 
@@ -28,11 +31,15 @@ alter table public.guestbook_traces add column if not exists language text;
 alter table public.guestbook_traces add column if not exists timezone text;
 alter table public.guestbook_traces add column if not exists screen text;
 alter table public.guestbook_traces add column if not exists platform text;
+alter table public.guestbook_traces add column if not exists ip_address inet;
+alter table public.guestbook_traces add column if not exists browser_hints jsonb not null default '{}'::jsonb;
+alter table public.guestbook_traces add column if not exists client_metadata jsonb not null default '{}'::jsonb;
 update public.guestbook_traces
 set image_url = drawing
 where image_url is null and drawing is not null;
 alter table public.guestbook_traces drop constraint if exists guestbook_traces_drawing_check;
 alter table public.guestbook_traces alter column image_url set not null;
+alter table public.guestbook_traces alter column drawing drop not null;
 
 alter table public.guestbook_traces enable row level security;
 
