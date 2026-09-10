@@ -1,9 +1,8 @@
-import type { GuestTrace } from "../data/guestbook";
-import { supabase } from "./supabase";
+import type { GuestTrace, GuestTraceMetadata } from "../data/guestbook";
 
 export interface GuestbookRepository {
   getTraces(): Promise<GuestTrace[]>;
-  addTrace(trace: Omit<GuestTrace, "id" | "createdAt">): Promise<GuestTrace>;
+  addTrace(trace: Omit<GuestTrace, "id" | "createdAt">, metadata?: GuestTraceMetadata): Promise<GuestTrace>;
   deleteTrace(id: string): Promise<void>;
 }
 
@@ -12,7 +11,8 @@ const traces: GuestTrace[] = [];
 type GuestbookRow = {
   id: string;
   name: string;
-  drawing: string;
+  image_url: string;
+  cloudinary_public_id: string | null;
   created_at: string;
   anonymous: boolean;
 };
@@ -21,7 +21,8 @@ function fromRow(row: GuestbookRow): GuestTrace {
   return {
     id: row.id,
     name: row.name,
-    drawing: row.drawing,
+    drawing: row.image_url,
+    cloudinaryPublicId: row.cloudinary_public_id ?? undefined,
     createdAt: row.created_at,
     anonymous: row.anonymous
   };
@@ -33,45 +34,28 @@ function fromRow(row: GuestbookRow): GuestTrace {
  */
 export const guestbookRepository: GuestbookRepository = {
   async getTraces() {
-    if (supabase) {
-      const { data, error } = await supabase
-        .from("guestbook_traces")
-        .select("id, name, drawing, created_at, anonymous")
-        .order("created_at", { ascending: false })
-        .limit(60);
-      if (!error && data) return (data as GuestbookRow[]).map(fromRow);
-      if (error) console.warn("Guestbook traces could not be loaded from Supabase.", error.message);
-    }
-    return [...traces];
+    const response = await fetch("/api/guestbook/traces", { cache: "no-store" });
+    if (!response.ok) throw new Error("Guestbook traces could not be loaded.");
+    const data = await response.json() as GuestbookRow[];
+    return data.map(fromRow);
   },
-  async addTrace(input) {
-    if (supabase) {
-      const { data, error } = await supabase
-        .from("guestbook_traces")
-        .insert({
-          name: input.name,
-          drawing: input.drawing,
-          anonymous: input.anonymous
-        })
-        .select("id, name, drawing, created_at, anonymous")
-        .single();
-      if (!error && data) return fromRow(data as GuestbookRow);
-      if (error) console.warn("Guestbook trace could not be saved to Supabase.", error.message);
-    }
-    const trace: GuestTrace = {
-      ...input,
-      id: `local-${Date.now()}`,
-      createdAt: new Date().toISOString()
-    };
-    traces.push(trace);
-    return trace;
+  async addTrace(input, metadata) {
+    const response = await fetch("/api/guestbook/traces", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: input.name,
+        imageUrl: input.drawing,
+        publicId: input.cloudinaryPublicId,
+        anonymous: input.anonymous,
+        ...metadata
+      })
+    });
+    if (!response.ok) throw new Error("Guestbook trace could not be saved.");
+    return fromRow(await response.json() as GuestbookRow);
   },
   async deleteTrace(id) {
-    if (supabase) {
-      const { error } = await supabase.from("guestbook_traces").delete().eq("id", id);
-      if (!error) return;
-      console.warn("Guestbook trace could not be deleted from Supabase.", error.message);
-    }
+    if (!id.startsWith("local-")) return;
     const index = traces.findIndex((trace) => trace.id === id);
     if (index >= 0) traces.splice(index, 1);
   }

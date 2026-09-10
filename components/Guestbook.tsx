@@ -105,10 +105,26 @@ export default function Guestbook() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     setError("");
+    const uploadResponse = await fetch("/api/guestbook/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dataUrl: canvas.toDataURL("image/webp", 0.75) })
+    });
+    const upload = await uploadResponse.json() as { url?: string; publicId?: string; error?: string };
+    if (!uploadResponse.ok || !upload.url) {
+      setError(upload.error ?? "Drawing upload failed. Please try again.");
+      return;
+    }
     const trace = await guestbookRepository.addTrace({
       name: cleanSignature,
-      drawing: canvas.toDataURL("image/webp", 0.75),
+      drawing: upload.url,
+      cloudinaryPublicId: upload.publicId,
       anonymous: true
+    }, {
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      screen: `${window.screen.width}x${window.screen.height}`,
+      language: navigator.language,
+      platform: navigator.platform
     });
     setTraces((current) => [trace, ...current].slice(0, 60));
     setTraceCount((count) => count + 1);
