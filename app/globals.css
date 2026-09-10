@@ -31,6 +31,16 @@ body{font-family:var(--font-sans),Arial,sans-serif}
 .egg-action{border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:12px 15px;font:10px var(--font-mono),monospace}
 .trace-wall{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}.trace-wall-heading{display:flex;justify-content:space-between;font:9px var(--font-mono),monospace;color:var(--muted);letter-spacing:.06em}.trace-empty{font-size:12px;color:var(--muted);margin:18px 0}.trace-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;max-height:230px;overflow:auto}.trace-card{margin:0;border:1px solid var(--line);background:#f3f1eb}.trace-card img{display:block;width:100%;height:72px;object-fit:cover}.trace-card figcaption{display:flex;justify-content:space-between;gap:5px;padding:7px;font:9px var(--font-mono),monospace;overflow:hidden}.trace-card figcaption span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trace-card small{color:var(--muted)}
 .admin-page{min-height:100vh;background:var(--paper);padding:70px 8vw}.admin-header span,.admin-login label,.admin-trace small{font:10px var(--font-mono),monospace;text-transform:uppercase;color:var(--muted)}.admin-header h1{font-size:clamp(50px,8vw,110px);letter-spacing:-.08em;line-height:.9;margin:25px 0 15px;font-weight:500}.admin-header p{color:var(--muted)}.admin-login{display:flex;gap:10px;align-items:end;max-width:520px;margin:55px 0 25px}.admin-login label{display:flex;flex-direction:column;gap:9px;flex:1}.admin-login input{border:1px solid var(--ink);background:transparent;padding:11px}.admin-login button,.admin-trace button{border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:12px 16px;font:10px var(--font-mono),monospace}.admin-error{color:#ad3e27;font:11px var(--font-mono),monospace}.admin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;border-top:1px solid var(--line);padding-top:20px}.admin-trace{border:1px solid var(--line);background:#ece9e1}.admin-trace img{display:block;width:100%;height:180px;object-fit:cover}.admin-trace>div{display:flex;flex-direction:column;gap:8px;padding:12px}.admin-trace button{align-self:flex-start;background:transparent;color:var(--ink);padding:8px 11px}.admin-trace button:hover{background:var(--ink);color:var(--paper)}
+/* Prevent intrinsic canvas, grid and modal children from widening mobile layouts. */
+.trace>div,.trace-board,.trace-board form,.trace-board input,.trace-board button,.trace-grid,.egg-overlay,.egg-card,.chess-board,.piano-keys{min-width:0;max-width:100%}
+.trace-board{width:100%;overflow:hidden}
+.trace-board canvas{display:block;width:100%;max-width:100%;height:auto;min-height:0}
+.trace-board form{width:100%}
+.trace-board input{width:100%;overflow:hidden;text-overflow:ellipsis}
+.chess-board{width:100%;aspect-ratio:1;overflow:hidden}
+.chess-board button{min-width:0;width:100%;padding:0}
+.piano-keys{width:100%;overflow:hidden}
+.piano-keys button{min-width:0}
 
 @media (max-width:800px){
   .stack-cloud{gap:14px 10px}
@@ -38,4 +48,6 @@ body{font-family:var(--font-sans),Arial,sans-serif}
   .trace-grid{grid-template-columns:repeat(2,1fr)}
   .egg-overlay{padding:16px;overflow-y:auto}.egg-card{width:min(100%,390px);max-height:calc(100dvh - 32px);overflow:auto;padding:30px 22px}.chess-board button{font-size:16px}.piano-keys{height:105px}
   .admin-page{padding:45px 6vw}.admin-login{display:block}.admin-login label{margin-bottom:12px}.admin-login button{width:100%;margin-top:10px}.admin-grid{grid-template-columns:repeat(2,1fr)}.admin-trace img{height:130px}
+  .trace{overflow:hidden}.trace-board{overflow:hidden}.trace-board canvas{height:clamp(170px,52vw,260px)}
+  .egg-overlay{width:100vw;max-width:100vw;box-sizing:border-box}.egg-card{box-sizing:border-box}.egg-card h3{font-size:clamp(34px,10vw,42px)}.piano-keys button{font-size:9px}
 }
